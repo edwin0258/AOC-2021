@@ -6,7 +6,6 @@ body {
 
 h1, h2, .code-header, .day-link, .to-page-top {
     color: #00cc00;
-    text-shadow: 0 0 2px #00cc00, 0 0 3px #00cc00;
 }
 
 h1, h2, .code-header {
@@ -20,7 +19,9 @@ h1, h2, .code-header {
 }
 
 h1 {
+    font-size: 18px;
     padding: 0px;
+    text-shadow: 0 0 2px #00cc00, 0 0 3px #00cc00;
 }
 
 h2 {
