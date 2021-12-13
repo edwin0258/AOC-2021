@@ -9,7 +9,7 @@ days = 256
 # count fish in groups to reduce calculation time
 for x in range(0, adultCycle+1):
     fish[x] = 0
-for x in range(3, babyCycle+1):
+for x in range(adultCycle-1, babyCycle+1):
     newFish[x] = 0
 
 for fi in f:
@@ -34,8 +34,8 @@ def sumKeys(d):
 for d in range(0, days):
     fish = rotateLeft(fish)
     newFish = rotateLeft(newFish)
-    fish[2] += newFish[8] # any new fish with an 8 is no longer new (becomes a 2 fish)
-    newFish[8] = 0 # remove new fish with 8, no longer new
-    newFish[8] = fish[6] # any fish with a 6 creates a new fish
+    fish[adultCycle-2] += newFish[babyCycle] # any new fish that has max num key is not new (becomes adult)
+    newFish[babyCycle] = 0 # remove new fish with max key, no longer new
+    newFish[babyCycle] = fish[adultCycle] # any fish with a max adult key creates a new fish
     
 print(sumKeys(fish) + sumKeys(newFish))
