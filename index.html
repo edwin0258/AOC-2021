@@ -15,7 +15,7 @@
         <h2>Days Completed</h2>
         <a class='to-page-top' href='#page-top'>Back to Top</a>
         
-,<div class='day-links'><a class='day-link' href='#day1'>day1</a><a class='day-link' href='#day2'>day2</a><a class='day-link' href='#day3'>day3</a><a class='day-link' href='#day4'>day4</a><a class='day-link' href='#day5'>day5</a><a class='day-link' href='#day6'>day6</a></div><h2 class='day-header' id='day1'>day1<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" /><img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>sonarSweep.js</h3><pre class='prettyprint'><code>const fs = require('fs')
+,<div class='day-links'><a class='day-link' href='#day1'>day1</a><a class='day-link' href='#day2'>day2</a><a class='day-link' href='#day3'>day3</a><a class='day-link' href='#day4'>day4</a><a class='day-link' href='#day5'>day5</a><a class='day-link' href='#day6'>day6</a><a class='day-link' href='#day7'>day7</a></div><h2 class='day-header' id='day1'>day1<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" /><img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>sonarSweep.js</h3><pre class='prettyprint'><code>const fs = require('fs')
 
 
 fs.readFile('sonarSweep.txt', (err, data) => {
@@ -562,6 +562,63 @@ for d in range(0, days):
     newFish[babyCycle] = fish[adultCycle] # any fish with a max adult key creates a new fish
     
 print(sumKeys(fish) + sumKeys(newFish))
+</code></pre></div></div><h2 class='day-header' id='day7'>day7<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>day7-1.js</h3><pre class='prettyprint'><code>const fs = require('fs');
+
+fs.readFile('data.txt', (err, data) => {
+    if (err) throw err
+
+    let positions = {}; // store positions in groups
+    let maxPos = 0;
+    let minFuel = Infinity;
+    
+    data.toString().split('\n')[0].split(',').map(x => +x).forEach(pos => {
+        maxPos = (pos > maxPos) ? pos : maxPos; // used for for loop later
+        (pos in positions) ? positions[pos] += 1 : positions[pos] = 1;
+    })
+
+    // test how much fuel all crabs need to reach each i pos 
+    for(let i = 0; i <= maxPos; i++) {
+        let fuelNeeded = 0;
+        Object.keys(positions).forEach(pos => {
+            let distBetween = (pos > i) ? (pos - i) : (i - pos);
+            fuelNeeded += (distBetween * positions[pos]); // dist * all crabs at pos
+        })
+        // Does pos offer min fuel required or not
+        if(minFuel > fuelNeeded) minFuel = fuelNeeded;
+    }
+
+    console.log(minFuel);
+})
+</code></pre></div><div class='code'><h3 class='code-header'>day7-2.js</h3><pre class='prettyprint'><code>const fs = require('fs');
+
+fs.readFile('data.txt', (err, data) => {
+    if (err) throw err
+
+    let positions = {}; // store positions in groups
+    let maxPos = 0;
+    let minFuel = Infinity;
+    
+    data.toString().split('\n')[0].split(',').map(x => +x).forEach(pos => {
+        maxPos = (pos > maxPos) ? pos : maxPos; // used for for loop later
+        (pos in positions) ? positions[pos] += 1 : positions[pos] = 1;
+    })
+
+    // test how much fuel all crabs need to reach each i pos 
+    for(let i = 0; i <= maxPos; i++) {
+        let fuelNeeded = 0;
+        Object.keys(positions).forEach(pos => {
+            let distBetween = (pos > i) ? (pos - i) : (i - pos);
+            // calculate nth triangle number (part 2)
+            // https://www.mathsisfun.com/algebra/triangular-numbers.html
+            let trangularNum = distBetween * ((distBetween+1)/2);
+            fuelNeeded += (trangularNum * positions[pos]); // dist * all crabs at pos
+        })
+        // Does pos offer min fuel required or not
+        if(minFuel > fuelNeeded) minFuel = fuelNeeded;
+    }
+
+    console.log(minFuel);
+})
 </code></pre></div></div>,
     </body>
 </html>
