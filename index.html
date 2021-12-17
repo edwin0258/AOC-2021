@@ -15,7 +15,7 @@
         <h2>Days Completed</h2>
         <a class='to-page-top' href='#page-top'>Back to Top</a>
         
-,<div class='day-links'><a class='day-link' href='#day1'>day1</a><a class='day-link' href='#day10'>day10</a><a class='day-link' href='#day2'>day2</a><a class='day-link' href='#day3'>day3</a><a class='day-link' href='#day4'>day4</a><a class='day-link' href='#day5'>day5</a><a class='day-link' href='#day6'>day6</a><a class='day-link' href='#day7'>day7</a><a class='day-link' href='#day8'>day8</a><a class='day-link' href='#day9'>day9</a></div><h2 class='day-header' id='day1'>day1<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" /><img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>sonarSweep.js</h3><pre class='prettyprint'><code>const fs = require('fs')
+,<div class='day-links'><a class='day-link' href='#day1'>day1</a><a class='day-link' href='#day2'>day2</a><a class='day-link' href='#day3'>day3</a><a class='day-link' href='#day4'>day4</a><a class='day-link' href='#day5'>day5</a><a class='day-link' href='#day6'>day6</a><a class='day-link' href='#day7'>day7</a><a class='day-link' href='#day8'>day8</a><a class='day-link' href='#day9'>day9</a><a class='day-link' href='#day10'>day10</a></div><h2 class='day-header' id='day1'>day1<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" /><img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>sonarSweep.js</h3><pre class='prettyprint'><code>const fs = require('fs')
 
 
 fs.readFile('sonarSweep.txt', (err, data) => {
@@ -77,84 +77,6 @@ for i, x in enumerate(dataArr):
     prev = curr 
     
 print(count - 1) # don't count first increase
-</code></pre></div></div><h2 class='day-header' id='day10'>day10<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>day10-1.py</h3><pre class='prettyprint'><code>f = open('data.txt', 'r')
-
-charPoints = {')': 3, ']': 57, '}': 1197, '>': 25137}
-# counts of each illegal char found
-illegalChars = {')': 0, ']': 0, '}': 0, '>': 0}
-for l in f:
-    chars = list(l)
-    # push/pop to match opening/closing braces
-    charStack = []
-    opening = ['(','[','{','<']
-    closing = [')',']','}','>']
-    mappings = {')': '(', ']': '[', '}': '{', '>': '<'}
-    for c in chars:
-        if c in opening:
-            charStack.append(c)
-        if c in closing:
-            if(len(charStack) > 0):
-                close = charStack.pop()
-                if(mappings[c] != close):
-                    illegalChars[c] += 1
-                    break
-            else:
-                print('NOT ENOUGH CHARS')
-                break
-
-# print solution
-total = 0
-for c in illegalChars:
-   total += (illegalChars[c] * charPoints[c]) 
-
-print(total)
-
-</code></pre></div><div class='code'><h3 class='code-header'>day10-2.py</h3><pre class='prettyprint'><code>f = open('data.txt', 'r')
-
-charPoints = {')': 1, ']': 2, '}': 3, '>': 4}
-autoCompletes = []
-# counts of each illegal char found
-for l in f:
-    chars = list(l)
-    # push/pop to match opening/closing braces
-    charStack = []
-    autoComplete = []
-    opening = ['(','[','{','<']
-    closing = [')',']','}','>']
-    mappings = {')': '(', ']': '[', '}': '{', '>': '<'}
-    revMappings = {'(':')', '[':']', '{':'}', '<':'>'}
-    for c in chars:
-        if c in opening:
-            charStack.append(c)
-        if c in closing:
-            if(len(charStack) > 0):
-                close = charStack.pop()
-                if(mappings[c] != close):
-                    # discard corrupted
-                    charStack = []
-                    break
-            else:
-                break
-
-    while(len(charStack) != 0):
-        # autocomplete
-        opn = charStack.pop() #open
-        autoComplete.append(revMappings[opn])
-
-    if(len(autoComplete) != 0):
-        autoCompletes.append(autoComplete)
-
-# print solution
-vals = [] # total values for each line
-for ac in autoCompletes:
-    total = 0
-    for c in ac:
-        total *= 5
-        total += charPoints[c]
-    vals.append(total)
-
-# print middle value
-print(sorted(vals)[int((len(vals) - 1) / 2)])
 </code></pre></div></div><h2 class='day-header' id='day2'>day2<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" /><img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>sub.js</h3><pre class='prettyprint'><code>const fs = require('fs');
 
 fs.readFile('data.txt', (err, data) => {
@@ -975,6 +897,84 @@ for size in (basinSizes[-3:]):
     total *= size 
 
 print(total)
+</code></pre></div></div><h2 class='day-header' id='day10'>day10<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>day10-1.py</h3><pre class='prettyprint'><code>f = open('data.txt', 'r')
+
+charPoints = {')': 3, ']': 57, '}': 1197, '>': 25137}
+# counts of each illegal char found
+illegalChars = {')': 0, ']': 0, '}': 0, '>': 0}
+for l in f:
+    chars = list(l)
+    # push/pop to match opening/closing braces
+    charStack = []
+    opening = ['(','[','{','<']
+    closing = [')',']','}','>']
+    mappings = {')': '(', ']': '[', '}': '{', '>': '<'}
+    for c in chars:
+        if c in opening:
+            charStack.append(c)
+        if c in closing:
+            if(len(charStack) > 0):
+                close = charStack.pop()
+                if(mappings[c] != close):
+                    illegalChars[c] += 1
+                    break
+            else:
+                print('NOT ENOUGH CHARS')
+                break
+
+# print solution
+total = 0
+for c in illegalChars:
+   total += (illegalChars[c] * charPoints[c]) 
+
+print(total)
+
+</code></pre></div><div class='code'><h3 class='code-header'>day10-2.py</h3><pre class='prettyprint'><code>f = open('data.txt', 'r')
+
+charPoints = {')': 1, ']': 2, '}': 3, '>': 4}
+autoCompletes = []
+# counts of each illegal char found
+for l in f:
+    chars = list(l)
+    # push/pop to match opening/closing braces
+    charStack = []
+    autoComplete = []
+    opening = ['(','[','{','<']
+    closing = [')',']','}','>']
+    mappings = {')': '(', ']': '[', '}': '{', '>': '<'}
+    revMappings = {'(':')', '[':']', '{':'}', '<':'>'}
+    for c in chars:
+        if c in opening:
+            charStack.append(c)
+        if c in closing:
+            if(len(charStack) > 0):
+                close = charStack.pop()
+                if(mappings[c] != close):
+                    # discard corrupted
+                    charStack = []
+                    break
+            else:
+                break
+
+    while(len(charStack) != 0):
+        # autocomplete
+        opn = charStack.pop() #open
+        autoComplete.append(revMappings[opn])
+
+    if(len(autoComplete) != 0):
+        autoCompletes.append(autoComplete)
+
+# print solution
+vals = [] # total values for each line
+for ac in autoCompletes:
+    total = 0
+    for c in ac:
+        total *= 5
+        total += charPoints[c]
+    vals.append(total)
+
+# print middle value
+print(sorted(vals)[int((len(vals) - 1) / 2)])
 </code></pre></div></div>,
     </body>
 </html>
