@@ -64,11 +64,15 @@ h2 {
     align-items: center;
 }
 
-.code {
+.code, .codepen {
     background:#1b1b33;
     border-radius: 2px;
     padding: 5px;
     margin: 10px 0;
+}
+
+.codepen {
+    width: 600px;
 }
 
 pre {
@@ -91,6 +95,10 @@ pre {
 @media only screen and (max-width: 1000px) {
     .codes {
         align-items: stretch;
+    }
+
+    .codepen {
+        width: auto;
     }
 
     body {

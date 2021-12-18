@@ -46,7 +46,7 @@ days.forEach(day => {
 function readDay(day) {
     let html = [];
     let languages = ['js', 'py'];
-    let lfns = {'js': 'javascript', 'py': 'python'}; // language full names, for icons
+    let lfns = {'js': 'javascript', 'py': 'python', 'codepen': 'codepen'}; // language full names, for icons
 
     // only fetch files of languages included above.
     let languagesPattern = languages.map(x => '.' + x).join('|');
@@ -54,6 +54,7 @@ function readDay(day) {
     const files = fs.readdirSync(`./${day}`);
 
     let pattern = new RegExp('..*?(' + languagesPattern + ')$')
+    let codepens = files.filter(x => x.match('codepens.txt')); // special codepens embeded file
     let code = files.filter(x => x.match(pattern)); // Only files of desired languages 
     let usedLanguages = new Set(code.map(f => f.slice(f.indexOf('.')+1,f.length))) // using set to remove duplicates
 
@@ -62,11 +63,40 @@ function readDay(day) {
         html.push(`<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${lfns[lang]}/${lfns[lang]}-original.svg" />`);
     })
 
+    if(codepens.length > 0) { // add codepen if used
+        html.push(`<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/codepen/codepen-plain.svg" />`);
+    }
+
+    // generate html for code for day
     html.push(`</h2><div class='codes'>`);
 
     code.forEach(fileName => {
         html.push(readCode(day, fileName));
     })
+
+    // if codepens file exist, embed it/them in page for day 
+    if(codepens.length > 0) {
+        let codepenData = fs.readFileSync(`./${day}/codepens.txt`);
+        codepenData = codepenData.toString().split('\n');
+        let codepenNext = false; 
+        let namePattern = new RegExp(/^\[.[a-zA-Z\d-]*\]$/);
+        let codepenName = "";
+        codepenData.forEach(line => {
+        
+            if(codepenNext) {
+                html.push(`<div class='codepen'>`);
+                html.push(`<h3 class='code-header'>${codepenName.slice(1,codepenName.length - 1)}</h3>`);
+                html.push(line);
+                html.push(`</div>`);
+                codepenNext = false;
+            }
+
+            if(line.match(namePattern)) {
+                codepenNext = true;
+                codepenName = line;
+            }
+        })
+    }
 
     html.push(`</div>`);
     return html.join('');
