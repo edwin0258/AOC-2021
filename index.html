@@ -15,7 +15,159 @@
         <h2>Days Completed</h2>
         <a class='to-page-top' href='#page-top'>Back to Top</a>
         
-,<div class='day-links'><a class='day-link' href='#day1'>day1</a><a class='day-link' href='#day2'>day2</a><a class='day-link' href='#day3'>day3</a><a class='day-link' href='#day4'>day4</a><a class='day-link' href='#day5'>day5</a><a class='day-link' href='#day6'>day6</a><a class='day-link' href='#day7'>day7</a><a class='day-link' href='#day8'>day8</a><a class='day-link' href='#day9'>day9</a><a class='day-link' href='#day10'>day10</a></div><h2 class='day-header' id='day1'>day1<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" /><img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>sonarSweep.js</h3><pre class='prettyprint'><code>const fs = require('fs')
+,<div class='day-links'><a class='day-link' href='#day4'>day4</a><a class='day-link' href='#day1'>day1</a><a class='day-link' href='#day2'>day2</a><a class='day-link' href='#day3'>day3</a><a class='day-link' href='#day5'>day5</a><a class='day-link' href='#day6'>day6</a><a class='day-link' href='#day7'>day7</a><a class='day-link' href='#day8'>day8</a><a class='day-link' href='#day9'>day9</a><a class='day-link' href='#day10'>day10</a><a class='day-link' href='#day11'>day11</a></div><h2 class='day-header' id='day4'>day4<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>day4-1.js</h3><pre class='prettyprint'><code>const fs = require('fs');
+
+fs.readFile('data.txt', (err, data) => {
+    if (err) throw err;
+
+    let boardSize = 5; // five rows per board
+
+    let [nums, ...boards] = data.toString().split('\n')
+    nums = nums.split(',');
+    boards = boards.filter(x => x.length > 4); // filter out empty lines
+    let boardsSplit = []; // 2d array with 1st level representing each board
+    let boardStats = []; // hold how many marked in x and y 
+
+    for(let i = 0; i < boards.length; i+=boardSize) {
+        boardsSplit.push(boards.slice(i, i+boardSize)); // one board per index
+        boardStats.push({'x': Array(boardSize).fill(0), 'y': Array(boardSize).fill(0)})
+    }
+    
+    boardsSplit = boardsSplit.map(board => board.join(' ').split(' ').filter(x => x.length != 0));
+    callBingoNums(nums, boardsSplit, boardStats, boardSize); 
+})
+
+
+function callBingoNums(bns, boards, stats, size) {
+    let calledNums = [];
+    bns.some(num => { // some used so can break out once winner determined
+        calledNums.push(num); // record number being called
+        // record num being found in board stats if found
+        boards.forEach((b, bi) => {
+            let matches = b.filter(bnum => bnum == num);
+            if(matches.length > 0) {
+                let y = b.indexOf(matches[0]) % size; // col of match
+                let x = Math.floor(b.indexOf(matches[0]) / size);
+
+                stats[bi]['x'][x] += 1;
+                stats[bi]['y'][y] += 1;
+            }
+        })
+
+        let check = checkStats(stats);
+        if(check[0] != -1) {
+            console.log("WINNER BOARD: " + (check[0]+1)); 
+            printSolution(boards[check[0]], calledNums);
+            return true; // we are done
+        }
+    })
+}
+
+// check to see if there is a bingo winner
+// returns: [winner? (-1, board index), (0: row, 1: col), row/col index]
+function checkStats(stats) {
+    let check = [-1, -1, -1];
+    stats.forEach((bstats, bi) => {
+        if(bstats['x'].indexOf(5) != -1) {
+            check = [bi, 0, bstats['x'].indexOf(5)];
+        } else if(bstats['y'].indexOf(5) != -1) {
+            check = [bi, 1, bstats['y'].indexOf(5)];
+        }
+    })
+
+    return check;
+}
+
+// calculate and print solution to challenge
+function printSolution(board, calledNums) {
+    let sum = board.filter(x => calledNums.indexOf(x) == -1)
+               .reduce((sum, x) => sum + parseInt(x), 0);
+    console.log(sum * calledNums[calledNums.length - 1]);
+}
+</code></pre></div><div class='code'><h3 class='code-header'>day4-2.js</h3><pre class='prettyprint'><code>const fs = require('fs');
+
+fs.readFile('data.txt', (err, data) => {
+    if (err) throw err;
+
+    let boardSize = 5; // five rows per board
+
+    let [nums, ...boards] = data.toString().split('\n')
+    nums = nums.split(',');
+    boards = boards.filter(x => x.length > 4); // filter out empty lines
+    let boardsSplit = []; // 2d array with 1st level representing each board
+    let boardStats = []; // hold how many marked in x and y 
+
+    for(let i = 0; i < boards.length; i+=boardSize) {
+        boardsSplit.push(boards.slice(i, i+boardSize)); // one board per index
+        boardStats.push({'x': Array(boardSize).fill(0), 'y': Array(boardSize).fill(0)})
+    }
+    
+    boardsSplit = boardsSplit.map(board => board.join(' ').split(' ').filter(x => x.length != 0));
+    callBingoNums(nums, boardsSplit, boardStats, boardSize); 
+})
+
+
+function callBingoNums(bns, boards, stats, size) {
+    let calledNums = [];
+    let winnerOrder = [];
+    bns.some(num => { // some used so can break out once winner determined
+        calledNums.push(num); // record number being called
+        // record num being found in board stats if found
+        boards.forEach((b, bi) => {
+            let matches = b.filter(bnum => bnum == num);
+            if(matches.length > 0) {
+                let y = b.indexOf(matches[0]) % size; // col of match
+                let x = Math.floor(b.indexOf(matches[0]) / size);
+
+                stats[bi]['x'][x] += 1;
+                stats[bi]['y'][y] += 1;
+            }
+        })
+
+        let check = checkStats(stats, winnerOrder);
+        winnerOrder = check[3];
+        if(check[0] != -1) {
+            console.log("WINNER BOARD: " + (check[0]+1)); 
+            printSolution(boards[check[0]], calledNums);
+            return true; // we are done
+        }
+    })
+}
+
+// check to see if there is a bingo winner
+// returns: [winner? (-1, board index), (0: row, 1: col), row/col index, winnerOrder]
+// only return successful check for last winner (part 2)
+function checkStats(stats, winnerOrder) {
+    let check = [-1, -1, -1];
+    stats.forEach((bstats, bi) => {
+        if(bstats['x'].indexOf(5) != -1) {
+            if(winnerOrder.indexOf(bi) == -1) {
+                winnerOrder.push(bi);
+                if(winnerOrder.length == stats.length)
+                    check = [bi, 0, bstats['x'].indexOf(5)];
+            }
+        } else if(bstats['y'].indexOf(5) != -1) {
+            // only add to order if not already a winner
+            if(winnerOrder.indexOf(bi) == -1) {
+                winnerOrder.push(bi);
+                // only last winner check is returned
+                if(winnerOrder.length == stats.length)
+                    check = [bi, 1, bstats['y'].indexOf(5)];
+            }
+        }
+    })
+
+    check.push(winnerOrder);
+    return check;
+}
+
+// calculate and print solution to challenge
+function printSolution(board, calledNums) {
+    let sum = board.filter(x => calledNums.indexOf(x) == -1)
+               .reduce((sum, x) => sum + parseInt(x), 0);
+    console.log(sum * calledNums[calledNums.length - 1]);
+}
+</code></pre></div></div><h2 class='day-header' id='day1'>day1<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" /><img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>sonarSweep.js</h3><pre class='prettyprint'><code>const fs = require('fs')
 
 
 fs.readFile('sonarSweep.txt', (err, data) => {
@@ -246,158 +398,6 @@ epsilonRate = int(''.join(map(str, lcs)), 2)
 
 print(gammaRate, epsilonRate)
 print(gammaRate * epsilonRate)
-</code></pre></div></div><h2 class='day-header' id='day4'>day4<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>day4-1.js</h3><pre class='prettyprint'><code>const fs = require('fs');
-
-fs.readFile('data.txt', (err, data) => {
-    if (err) throw err;
-
-    let boardSize = 5; // five rows per board
-
-    let [nums, ...boards] = data.toString().split('\n')
-    nums = nums.split(',');
-    boards = boards.filter(x => x.length > 4); // filter out empty lines
-    let boardsSplit = []; // 2d array with 1st level representing each board
-    let boardStats = []; // hold how many marked in x and y 
-
-    for(let i = 0; i < boards.length; i+=boardSize) {
-        boardsSplit.push(boards.slice(i, i+boardSize)); // one board per index
-        boardStats.push({'x': Array(boardSize).fill(0), 'y': Array(boardSize).fill(0)})
-    }
-    
-    boardsSplit = boardsSplit.map(board => board.join(' ').split(' ').filter(x => x.length != 0));
-    callBingoNums(nums, boardsSplit, boardStats, boardSize); 
-})
-
-
-function callBingoNums(bns, boards, stats, size) {
-    let calledNums = [];
-    bns.some(num => { // some used so can break out once winner determined
-        calledNums.push(num); // record number being called
-        // record num being found in board stats if found
-        boards.forEach((b, bi) => {
-            let matches = b.filter(bnum => bnum == num);
-            if(matches.length > 0) {
-                let y = b.indexOf(matches[0]) % size; // col of match
-                let x = Math.floor(b.indexOf(matches[0]) / size);
-
-                stats[bi]['x'][x] += 1;
-                stats[bi]['y'][y] += 1;
-            }
-        })
-
-        let check = checkStats(stats);
-        if(check[0] != -1) {
-            console.log("WINNER BOARD: " + (check[0]+1)); 
-            printSolution(boards[check[0]], calledNums);
-            return true; // we are done
-        }
-    })
-}
-
-// check to see if there is a bingo winner
-// returns: [winner? (-1, board index), (0: row, 1: col), row/col index]
-function checkStats(stats) {
-    let check = [-1, -1, -1];
-    stats.forEach((bstats, bi) => {
-        if(bstats['x'].indexOf(5) != -1) {
-            check = [bi, 0, bstats['x'].indexOf(5)];
-        } else if(bstats['y'].indexOf(5) != -1) {
-            check = [bi, 1, bstats['y'].indexOf(5)];
-        }
-    })
-
-    return check;
-}
-
-// calculate and print solution to challenge
-function printSolution(board, calledNums) {
-    let sum = board.filter(x => calledNums.indexOf(x) == -1)
-               .reduce((sum, x) => sum + parseInt(x), 0);
-    console.log(sum * calledNums[calledNums.length - 1]);
-}
-</code></pre></div><div class='code'><h3 class='code-header'>day4-2.js</h3><pre class='prettyprint'><code>const fs = require('fs');
-
-fs.readFile('data.txt', (err, data) => {
-    if (err) throw err;
-
-    let boardSize = 5; // five rows per board
-
-    let [nums, ...boards] = data.toString().split('\n')
-    nums = nums.split(',');
-    boards = boards.filter(x => x.length > 4); // filter out empty lines
-    let boardsSplit = []; // 2d array with 1st level representing each board
-    let boardStats = []; // hold how many marked in x and y 
-
-    for(let i = 0; i < boards.length; i+=boardSize) {
-        boardsSplit.push(boards.slice(i, i+boardSize)); // one board per index
-        boardStats.push({'x': Array(boardSize).fill(0), 'y': Array(boardSize).fill(0)})
-    }
-    
-    boardsSplit = boardsSplit.map(board => board.join(' ').split(' ').filter(x => x.length != 0));
-    callBingoNums(nums, boardsSplit, boardStats, boardSize); 
-})
-
-
-function callBingoNums(bns, boards, stats, size) {
-    let calledNums = [];
-    let winnerOrder = [];
-    bns.some(num => { // some used so can break out once winner determined
-        calledNums.push(num); // record number being called
-        // record num being found in board stats if found
-        boards.forEach((b, bi) => {
-            let matches = b.filter(bnum => bnum == num);
-            if(matches.length > 0) {
-                let y = b.indexOf(matches[0]) % size; // col of match
-                let x = Math.floor(b.indexOf(matches[0]) / size);
-
-                stats[bi]['x'][x] += 1;
-                stats[bi]['y'][y] += 1;
-            }
-        })
-
-        let check = checkStats(stats, winnerOrder);
-        winnerOrder = check[3];
-        if(check[0] != -1) {
-            console.log("WINNER BOARD: " + (check[0]+1)); 
-            printSolution(boards[check[0]], calledNums);
-            return true; // we are done
-        }
-    })
-}
-
-// check to see if there is a bingo winner
-// returns: [winner? (-1, board index), (0: row, 1: col), row/col index, winnerOrder]
-// only return successful check for last winner (part 2)
-function checkStats(stats, winnerOrder) {
-    let check = [-1, -1, -1];
-    stats.forEach((bstats, bi) => {
-        if(bstats['x'].indexOf(5) != -1) {
-            if(winnerOrder.indexOf(bi) == -1) {
-                winnerOrder.push(bi);
-                if(winnerOrder.length == stats.length)
-                    check = [bi, 0, bstats['x'].indexOf(5)];
-            }
-        } else if(bstats['y'].indexOf(5) != -1) {
-            // only add to order if not already a winner
-            if(winnerOrder.indexOf(bi) == -1) {
-                winnerOrder.push(bi);
-                // only last winner check is returned
-                if(winnerOrder.length == stats.length)
-                    check = [bi, 1, bstats['y'].indexOf(5)];
-            }
-        }
-    })
-
-    check.push(winnerOrder);
-    return check;
-}
-
-// calculate and print solution to challenge
-function printSolution(board, calledNums) {
-    let sum = board.filter(x => calledNums.indexOf(x) == -1)
-               .reduce((sum, x) => sum + parseInt(x), 0);
-    console.log(sum * calledNums[calledNums.length - 1]);
-}
 </code></pre></div></div><h2 class='day-header' id='day5'>day5<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>day5-1.py</h3><pre class='prettyprint'><code>f = open('data.txt', 'r')
 
 coords = [] # keep track of coords with atleast 1 vent
@@ -975,6 +975,170 @@ for ac in autoCompletes:
 
 # print middle value
 print(sorted(vals)[int((len(vals) - 1) / 2)])
+</code></pre></div></div><h2 class='day-header' id='day11'>day11<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>day11-1.js</h3><pre class='prettyprint'><code>const fs = require('fs');
+
+fs.readFile('data.txt', (err, data) => {
+    if (err) throw err
+
+    dumbos = data.toString().split('\n').map(x => x.split('').map(n => +n));
+
+    // add one to all
+    function addOneDumbos(dumbos) {
+      return dumbos.map(row => row.map(x => x + 1));
+    }
+
+    // dumbos ready to flash (greater than 9)
+    function getGreaterThan(dumbos, lim) {
+      let greater = [];
+      dumbos.forEach((row, y) => {
+        row.forEach((d, x) => { if(d > lim) greater.push([y, x]) })
+      })
+      return greater;
+    }
+
+    // Add one around max dumbos
+    function addOneAround(dmbs, maxs) {
+      //console.log('before', dmbs);
+      
+      maxs.forEach(z=> {
+        let [zy, zx] = [z[0], z[1]];
+        let around = [[zy+1, zx-1], [zy+1, zx], [zy+1, zx+1],
+                      [zy,   zx-1] /* dumbo */, [zy,   zx+1],
+                      [zy-1, zx-1], [zy-1, zx], [zy-1, zx+1]];
+        
+        // add one if defined
+        around.forEach(c => {
+          let [cy, cx] = [c[0], c[1]]
+          // not undefined and not a 9 or -1
+          if(!(dmbs[cy] === undefined || dmbs[cy][cx] === undefined) && 
+             (dmbs[cy][cx] != -1)) {
+            
+            dmbs[cy][cx] = dmbs[cy][cx] + 1;
+          }
+        })
+      })
+      //console.log('after', dmbs);
+      return dmbs;
+    }
+
+    // set dumbos that are greater than 10 to -1 to avoid being used in any way before next loop
+    function flashDumbos(dumbos, lim) {
+      return dumbos.map(row => row.map(x => (x > lim) ? -1 : x));
+    }
+
+    // reset all flashed dumbos to 0
+    function resetFlashed(dumbos) {
+      return dumbos.map(row => row.map(x => (x == -1) ? 0 : x));
+    }
+
+    let stepCount = 100;
+    let flashes = 0;
+    let energyLimit = 9;
+    for(let i = 0; i < stepCount; i++) {
+      dumbos = addOneDumbos(dumbos);
+      totalStepFlashes = 0;
+      
+      maxDumbos = getGreaterThan(dumbos, energyLimit);
+      // loop until no new nines appear
+      while(maxDumbos.length > 0) {
+        dumbos = flashDumbos(dumbos, energyLimit);
+        dumbos = addOneAround(dumbos, maxDumbos);
+        flashes += maxDumbos.length; // add to total flashes
+        totalStepFlashes += maxDumbos.length;
+        maxDumbos = getGreaterThan(dumbos, energyLimit);
+      }
+      
+      dumbos = resetFlashed(dumbos);
+    }
+
+    console.log(flashes);
+})
+</code></pre></div><div class='code'><h3 class='code-header'>day11-2.js</h3><pre class='prettyprint'><code>const fs = require('fs');
+
+fs.readFile('data.txt', (err, data) => {
+    if (err) throw err
+
+    dumbos = data.toString().split('\n').map(x => x.split('').map(n => +n));
+
+    // add one to all
+    function addOneDumbos(dumbos) {
+      return dumbos.map(row => row.map(x => x + 1));
+    }
+
+    // dumbos ready to flash (greater than 9)
+    function getGreaterThan(dumbos, lim) {
+      let greater = [];
+      dumbos.forEach((row, y) => {
+        row.forEach((d, x) => { if(d > lim) greater.push([y, x]) })
+      })
+      return greater;
+    }
+
+    // Add one around max dumbos
+    function addOneAround(dmbs, maxs) {
+      //console.log('before', dmbs);
+      
+      maxs.forEach(z=> {
+        let [zy, zx] = [z[0], z[1]];
+        let around = [[zy+1, zx-1], [zy+1, zx], [zy+1, zx+1],
+                      [zy,   zx-1] /* dumbo */, [zy,   zx+1],
+                      [zy-1, zx-1], [zy-1, zx], [zy-1, zx+1]];
+        
+        // add one if defined
+        around.forEach(c => {
+          let [cy, cx] = [c[0], c[1]]
+          // not undefined and not a 9 or -1
+          if(!(dmbs[cy] === undefined || dmbs[cy][cx] === undefined) && 
+             (dmbs[cy][cx] != -1)) {
+            
+            dmbs[cy][cx] = dmbs[cy][cx] + 1;
+          }
+        })
+      })
+      //console.log('after', dmbs);
+      return dmbs;
+    }
+
+    // set dumbos that are greater than 10 to -1 to avoid being used in any way before next loop
+    function flashDumbos(dumbos, lim) {
+      return dumbos.map(row => row.map(x => (x > lim) ? -1 : x));
+    }
+
+    // reset all flashed dumbos to 0
+    function resetFlashed(dumbos) {
+      return dumbos.map(row => row.map(x => (x == -1) ? 0 : x));
+    }
+
+    // determine if all dumbos are flashing at the same time
+    function isAllFlashing(dumbos) {
+      // a return of 0 means all are flashing
+      return dumbos.filter(row => row.filter(x => x != 0).length > 0).length;
+    }
+
+    let stepCount = 100;
+    let steps = 0;
+    let flashes = 0;
+    let energyLimit = 9;
+    while(isAllFlashing(dumbos) != 0) {
+      steps += 1;
+      dumbos = addOneDumbos(dumbos);
+      totalStepFlashes = 0;
+
+      maxDumbos = getGreaterThan(dumbos, energyLimit);
+      // loop until no new nines appear
+      while(maxDumbos.length > 0) {
+        dumbos = flashDumbos(dumbos, energyLimit);
+        dumbos = addOneAround(dumbos, maxDumbos);
+        flashes += maxDumbos.length; // add to total flashes
+        totalStepFlashes += maxDumbos.length;
+        maxDumbos = getGreaterThan(dumbos, energyLimit);
+      }
+
+      dumbos = resetFlashed(dumbos);
+    }
+
+    console.log(steps);
+})
 </code></pre></div></div>,
     </body>
 </html>
