@@ -15,7 +15,7 @@
         <h2>Days Completed</h2>
         <a class='to-page-top' href='#page-top'>Back to Top</a>
         
-,<div class='day-links'><a class='day-link' href='#day1'>day1</a><a class='day-link' href='#day2'>day2</a><a class='day-link' href='#day3'>day3</a><a class='day-link' href='#day4'>day4</a><a class='day-link' href='#day5'>day5</a><a class='day-link' href='#day6'>day6</a><a class='day-link' href='#day7'>day7</a><a class='day-link' href='#day8'>day8</a><a class='day-link' href='#day9'>day9</a><a class='day-link' href='#day10'>day10</a><a class='day-link' href='#day11'>day11</a><a class='day-link' href='#day12'>day12</a></div><h2 class='day-header' id='day1'>day1<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" /><img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>sonarSweep.js</h3><pre class='prettyprint'><code>const fs = require('fs')
+,<div class='day-links'><a class='day-link' href='#day1'>day1</a><a class='day-link' href='#day2'>day2</a><a class='day-link' href='#day3'>day3</a><a class='day-link' href='#day4'>day4</a><a class='day-link' href='#day5'>day5</a><a class='day-link' href='#day6'>day6</a><a class='day-link' href='#day7'>day7</a><a class='day-link' href='#day8'>day8</a><a class='day-link' href='#day9'>day9</a><a class='day-link' href='#day10'>day10</a><a class='day-link' href='#day11'>day11</a><a class='day-link' href='#day12'>day12</a><a class='day-link' href='#day13'>day13</a></div><h2 class='day-header' id='day1'>day1<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" /><img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>sonarSweep.js</h3><pre class='prettyprint'><code>const fs = require('fs')
 
 
 fs.readFile('sonarSweep.txt', (err, data) => {
@@ -1312,6 +1312,196 @@ traverseCave('start', [], 'start', [None, 0])
 
 # print solution
 print(len(set(cavePaths)))
+</code></pre></div></div><h2 class='day-header' id='day13'>day13<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>day13-1.py</h3><pre class='prettyprint'><code>import functools
+
+data = open('data.txt', 'r')
+
+# Track coords by seperate row/col dicts
+# This should allow for easier manipulation
+# when folding coords along x/y axis 
+dotCoordsX = {} # {X: [y1,y2,y3], X2:...} 
+dotCoordsY = {} # {Y: [x1,x2,x3], Y2:...}
+folds = [] # [[x/y, foldPos],[x/y, foldPos]...]
+coordData = True
+
+for l in data:
+    if coordData:
+        if(l == '\n'):
+            # end of coordinate data
+            coordData = False
+        else:
+            [x, y] = [int(n) for n in l.strip().split(',')]
+
+            if x in dotCoordsX:
+                dotCoordsX[x].append(y)
+            else:
+                dotCoordsX[x] = [y]
+
+            if y in dotCoordsY:
+                dotCoordsY[y].append(x)
+            else:
+                dotCoordsY[y] = [x]
+
+        continue
+
+
+    # now collecting fold info 
+    fold = l.strip().split('=')
+    folds.append([fold[0][-1], int(fold[1])])
+
+# make a fold given a dotCoord dict, foldPos 
+def makeFold(dotCoords, foldPos):
+    dotCoordsTemp = dict(dotCoords)
+    for n in dotCoords:
+        # get new n pos from folding up or left
+        if n > foldPos:
+            newN = foldPos - (n - foldPos)
+
+            if newN in dotCoordsTemp:
+                dotCoordsTemp[newN] += dotCoordsTemp[n]
+            else:
+                dotCoordsTemp[newN] = dotCoordsTemp[n]
+            dotCoordsTemp.pop(n, None)
+
+            # remove any duplicates from overlapping points
+            dotCoordsTemp[newN] = list(set(dotCoordsTemp[newN]))
+    return dotCoordsTemp
+
+# after each fold, it is necessary both dotCoord dicts are updated
+# this is used for that
+def transposeDotCoords(dotCoords):
+    dotCoordsTransposed = {} 
+    for x in dotCoords:
+        for y in dotCoords[x]:
+            if y in dotCoordsTransposed:
+                dotCoordsTransposed[y].append(x)
+            else:
+                dotCoordsTransposed[y] = [x]
+    return dotCoordsTransposed
+
+
+    
+def makeFolds(dotCoordsX, dotCoordsY, folds):
+    for fold in folds:
+        [foldDir, foldPos] = fold
+        if(foldDir == 'y'):
+            # folding bottom upwards (y-dir)
+            dotCoordsY = makeFold(dotCoordsY, foldPos) 
+            dotCoordsX = transposeDotCoords(dotCoordsY)
+
+        if(foldDir == 'x'):
+            # folding right lefwards (x-dir)
+            dotCoordsX = makeFold(dotCoordsX, foldPos)
+            dotCoordsY = transposeDotCoords(dotCoordsX)
+
+        # only perform 1st fold for part 1
+        break
+
+    # print solution
+    t = functools.reduce(lambda total, r: total + len(dotCoordsY[r]), dotCoordsY, 0)
+    print(t)
+
+makeFolds(dotCoordsX, dotCoordsY, folds)
+</code></pre></div><div class='code'><h3 class='code-header'>day13-2.py</h3><pre class='prettyprint'><code>import functools
+
+data = open('data.txt', 'r')
+
+# Track coords by seperate row/col dicts
+# This should allow for easier manipulation
+# when folding coords along x/y axis 
+dotCoordsX = {} # {X: [y1,y2,y3], X2:...} 
+dotCoordsY = {} # {Y: [x1,x2,x3], Y2:...}
+folds = [] # [[x/y, foldPos],[x/y, foldPos]...]
+coordData = True
+
+for l in data:
+    if coordData:
+        if(l == '\n'):
+            # end of coordinate data
+            coordData = False
+        else:
+            [x, y] = [int(n) for n in l.strip().split(',')]
+
+            if x in dotCoordsX:
+                dotCoordsX[x].append(y)
+            else:
+                dotCoordsX[x] = [y]
+
+            if y in dotCoordsY:
+                dotCoordsY[y].append(x)
+            else:
+                dotCoordsY[y] = [x]
+
+        continue
+
+
+    # now collecting fold info 
+    fold = l.strip().split('=')
+    folds.append([fold[0][-1], int(fold[1])])
+
+# make a fold given a dotCoord dict, foldPos 
+def makeFold(dotCoords, foldPos):
+    dotCoordsTemp = dict(dotCoords)
+    for n in dotCoords:
+        # get new n pos from folding up or left
+        if n > foldPos:
+            newN = foldPos - (n - foldPos)
+
+            if newN in dotCoordsTemp:
+                dotCoordsTemp[newN] += dotCoordsTemp[n]
+            else:
+                dotCoordsTemp[newN] = dotCoordsTemp[n]
+            dotCoordsTemp.pop(n, None)
+
+            # remove any duplicates from overlapping points
+            dotCoordsTemp[newN] = list(set(dotCoordsTemp[newN]))
+    return dotCoordsTemp
+
+# after each fold, it is necessary both dotCoord dicts are updated
+# this is used for that
+def transposeDotCoords(dotCoords):
+    dotCoordsTransposed = {} 
+    for x in dotCoords:
+        for y in dotCoords[x]:
+            if y in dotCoordsTransposed:
+                dotCoordsTransposed[y].append(x)
+            else:
+                dotCoordsTransposed[y] = [x]
+    return dotCoordsTransposed
+
+# Make a visual display of dots based on y coords dict
+def displayCoordsY(dotCoords):
+    # where final display rows are placed
+    display = [[]] * (max(dotCoords.keys()) + 1)
+
+    for y in dotCoords:
+        displayRow = ['.'] * (max(dotCoords[y]) + 1)
+        for x in dotCoords[y]:
+            displayRow[x] = '#'
+        display[y] = displayRow
+
+    for r in display:
+        print(''.join(r))
+
+    
+def makeFolds(dotCoordsX, dotCoordsY, folds):
+    for fold in folds:
+        [foldDir, foldPos] = fold
+        if(foldDir == 'y'):
+            # folding bottom upwards (y-dir)
+            dotCoordsY = makeFold(dotCoordsY, foldPos) 
+            dotCoordsX = transposeDotCoords(dotCoordsY)
+
+        if(foldDir == 'x'):
+            # folding right lefwards (x-dir)
+            dotCoordsX = makeFold(dotCoordsX, foldPos)
+            dotCoordsY = transposeDotCoords(dotCoordsX)
+
+    # get solution
+    displayCoordsY(dotCoordsY)
+
+
+makeFolds(dotCoordsX, dotCoordsY, folds)
 </code></pre></div></div>,
     </body>
 </html>
