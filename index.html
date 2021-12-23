@@ -15,7 +15,7 @@
         <h2>Days Completed</h2>
         <a class='to-page-top' href='#page-top'>Back to Top</a>
         
-,<div class='day-links'><a class='day-link' href='#day4'>day4</a><a class='day-link' href='#day1'>day1</a><a class='day-link' href='#day2'>day2</a><a class='day-link' href='#day3'>day3</a><a class='day-link' href='#day5'>day5</a><a class='day-link' href='#day6'>day6</a><a class='day-link' href='#day7'>day7</a><a class='day-link' href='#day8'>day8</a><a class='day-link' href='#day9'>day9</a><a class='day-link' href='#day10'>day10</a><a class='day-link' href='#day11'>day11</a></div><h2 class='day-header' id='day4'>day4<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>day4-1.js</h3><pre class='prettyprint'><code>const fs = require('fs');
+,<div class='day-links'><a class='day-link' href='#day4'>day4</a><a class='day-link' href='#day1'>day1</a><a class='day-link' href='#day2'>day2</a><a class='day-link' href='#day3'>day3</a><a class='day-link' href='#day5'>day5</a><a class='day-link' href='#day6'>day6</a><a class='day-link' href='#day7'>day7</a><a class='day-link' href='#day8'>day8</a><a class='day-link' href='#day9'>day9</a><a class='day-link' href='#day10'>day10</a><a class='day-link' href='#day11'>day11</a><a class='day-link' href='#day12'>day12</a></div><h2 class='day-header' id='day4'>day4<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>day4-1.js</h3><pre class='prettyprint'><code>const fs = require('fs');
 
 fs.readFile('data.txt', (err, data) => {
     if (err) throw err;
@@ -1139,6 +1139,310 @@ fs.readFile('data.txt', (err, data) => {
 
     console.log(steps);
 })
-</code></pre></div><div class='codepen'><h3 class='code-header'>AOC-Day11</h3><p class="codepen" data-height="650" data-default-tab="result" data-slug-hash="zYEwMwg" data-preview="true" data-user="edwin0258" style="height: 650px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;"><span>See the Pen <a href="https://codepen.io/edwin0258/pen/zYEwMwg">AOC-Day11-1</a> by Devin (<a href="https://codepen.io/edwin0258">@edwin0258</a>)on <a href="https://codepen.io">CodePen</a>.</span></p><script async src="https://cpwebassets.codepen.io/assets/embed/ei.js"></script></div></div>,
+</code></pre></div><div class='codepen'><h3 class='code-header'>AOC-Day11</h3><p class="codepen" data-height="650" data-default-tab="result" data-slug-hash="zYEwMwg" data-preview="true" data-user="edwin0258" style="height: 650px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;"><span>See the Pen <a href="https://codepen.io/edwin0258/pen/zYEwMwg">AOC-Day11-1</a> by Devin (<a href="https://codepen.io/edwin0258">@edwin0258</a>)on <a href="https://codepen.io">CodePen</a>.</span></p><script async src="https://cpwebassets.codepen.io/assets/embed/ei.js"></script></div></div><h2 class='day-header' id='day12'>day12<img class='lang-icon' src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" /></h2><div class='codes'><div class='code'><h3 class='code-header'>day12-1.py</h3><pre class='prettyprint'><code>f = open('data.txt', 'r')
+
+def genCaveConnections(data, caveObj):
+    for l in data:
+        # create an obj representing connections in cave system
+        [p1, p2] = l.strip().split('-')
+        if p1 in caveObj:
+            caveObj[p1].append(p2)
+        else:
+            caveObj[p1] = [p2]
+
+        if p2 in caveObj:
+            caveObj[p2].append(p1)
+        else:
+            caveObj[p2] = [p1]
+
+    return caveObj
+
+# holds mappings of routes in cave
+caveObj = genCaveConnections(f, {}) 
+# cave paths
+cavePaths = []
+
+
+# check if end can be reached from this route
+def canEnd(r, prevs):
+    # for route in cave object
+    prevs.append(r)
+    if r in caveObj:
+        if 'end' in caveObj[r]: # end found!
+            return True
+        else:
+            childRouteEnds = []
+            # child route
+            for cr in caveObj[r]:
+                if cr not in prevs: 
+                    # check can end on each child r
+                    childRouteEnds.append(canEnd(cr, prevs[:]))
+
+            # does a child route have an end
+            # or a child of that child?
+            return True in childRouteEnds
+
+    return False
+
+# Note: list[:] is needed to pass lists by val instead of reference
+
+# (current point in cave, previous points visited, complete route)
+def traverseCave(cur, prevs, route):
+    prevs.append(cur)
+    if cur in caveObj:
+        for r in caveObj[cur]:
+            if r == 'end':
+                cavePaths.append(route + '-end')
+                continue
+
+            # avoid going down a one way dead end..
+            if cur.islower() and r.islower() and not canEnd(r, []):
+                continue
+
+            # can't go back to a lowercase cave 2 times (small cave)
+            if r.islower() and r in prevs:
+                continue
+
+            traverseCave(r, prevs[:], route + '-' + r)
+    else:
+        if cur == 'end':
+            cavePaths.append(route)
+        else:
+            # go back 1, retrace steps
+            traverseCave(prevs[-2], prevs[:], route + '-' + prevs[-2])
+
+
+# find all paths/routes in cave object
+# start at cave start
+traverseCave('start', [], 'start')
+
+# print solution
+print(len(cavePaths))
+</code></pre></div><div class='code'><h3 class='code-header'>day12-2.py</h3><pre class='prettyprint'><code>f = open('data.txt', 'r')
+
+def genCaveConnections(data, caveObj):
+    for l in data:
+        # create an obj representing connections in cave system
+        [p1, p2] = l.strip().split('-')
+        if p1 in caveObj:
+            caveObj[p1].append(p2)
+        else:
+            caveObj[p1] = [p2]
+
+        if p2 in caveObj:
+            caveObj[p2].append(p1)
+        else:
+            caveObj[p2] = [p1]
+
+    return caveObj
+
+# holds mappings of routes in cave
+caveObj = genCaveConnections(f, {}) 
+# cave paths
+cavePaths = []
+
+
+# check if end can be reached from this route
+def canEnd(r, prevs):
+    # for route in cave object
+    prevs.append(r)
+    if r in caveObj:
+        if 'end' in caveObj[r]: # end found!
+            return True
+        else:
+            childRouteEnds = []
+            # child route
+            for cr in caveObj[r]:
+                if cr not in prevs: 
+                    # check can end on each child r
+                    childRouteEnds.append(canEnd(cr, prevs[:]))
+
+            # does a child route have an end
+            # or a child of that child?
+            return True in childRouteEnds
+
+    return False
+
+# Note: list[:] is needed to pass lists by val instead of reference
+
+# (current point in cave, previous points visited, complete route
+# [designated two visit small cave for route, # uses])
+def traverseCave(cur, prevs, route, twoUse):
+    prevs.append(cur)
+    if (twoUse[0] is not None):
+        if (cur == twoUse[0]):
+            twoUse[1] += 1
+
+    if cur in caveObj:
+        for r in caveObj[cur]:
+            if r == 'end':
+                cavePaths.append(route + '-end')
+                continue
+
+            # avoid going down a one way dead end..
+            if (cur.islower() and (r.islower() and not canEnd(r, []))):
+                # if cur can still be visited again
+                # then continue is incorrect in that case
+                if not (cur == twoUse[0] and twoUse[1] != 2):
+                    continue
+
+            # can't go back to a lowercase cave 2 times (small cave)
+            # unless a special two visit small cave (one of these)
+            if r.islower() and r in prevs:
+                if not (r == twoUse[0] and twoUse[1] != 2):
+                    continue
+
+            traverseCave(r, prevs[:], route + '-' + r, twoUse[:])
+
+            if r.islower() and twoUse[0] is None:
+                if(r not in ['start', 'end']):
+                    traverseCave(r, prevs[:], route + '-' + r, [r, 0])
+                
+    else:
+        if cur == 'end':
+            cavePaths.append(route)
+        else:
+            # go back 1, retrace steps
+            traverseCave(prevs[-2], prevs[:], route + '-' + prevs[-2], twoUse[:])
+
+
+# find all paths/routes in cave object
+# start at cave start
+traverseCave('start', [], 'start', [None, 0])
+
+# print solution
+print(len(set(cavePaths)))
+</code></pre></div><div class='code'><h3 class='code-header'>fail.py</h3><pre class='prettyprint'><code>f = open('testdata.txt', 'r')
+
+def genCaveConnections(data, caveObj):
+    for l in data:
+        # create an obj representing connections in cave system
+        [p1, p2] = l.strip().split('-')
+        if p1 in caveObj:
+            caveObj[p1].append(p2)
+        else:
+            caveObj[p1] = [p2]
+
+        if p2 in caveObj:
+            caveObj[p2].append(p1)
+        else:
+            caveObj[p2] = [p1]
+
+        # every small cave has an allowed two visits option (part 2)
+        if(p1.islower() and p1 not in ['end', 'start']):
+                caveObj[p2].append(p1 + '-two')
+        if(p2.islower() and p2 not in ['end', 'start']):
+                caveObj[p1].append(p2 + '-two')
+
+    caveObjTemp = dict(caveObj)
+    # make a -two copy of each small cave key
+    for r in caveObj:
+        if(r.islower()):
+            caveObjTemp[r + '-two'] = caveObjTemp[r]
+
+    return caveObjTemp 
+
+# holds mappings of routes in cave
+caveObj = genCaveConnections(f, {}) 
+# cave paths
+cavePaths = []
+
+# one small cave may be visited 2 times in route
+smallCaveVisitLim = 2 
+
+
+# Used to check for x and x-two (these are same cave)
+def sameCave(a, b):
+    if '-' in a:
+        return b == a.split('-')[0]
+    elif '-' in b:
+        return a == b.split('-')[0]
+    return False
+
+# check if end can be reached from this route
+def canEnd(r, prevs):
+    # for route in cave object
+    prevs.append(r)
+    if r in caveObj:
+        if 'end' in caveObj[r]: # end found!
+            return True
+        else:
+            childRouteEnds = []
+            # child route
+            for cr in caveObj[r]:
+                if cr not in prevs: 
+                    # check can end on each child r
+                    childRouteEnds.append(canEnd(cr, prevs[:]))
+
+            # does a child route have an end
+            # or a child of that child?
+            return True in childRouteEnds
+
+    return False
+
+# Note: list[:] is needed to pass lists by val instead of reference
+
+# (current point in cave, previous points visited, complete route, 
+#  [designated two visit cave for route, visits made to cave])
+def traverseCave(cur, prevs, route, twoUse):
+    prevs.append(cur)
+    if cur in caveObj:
+        for r in caveObj[cur]:
+            if r == 'end':
+                cavePaths.append(route + '-end')
+                continue
+
+            # One small cave with max limit logic
+            if '-two' in r and r.split('-')[0] in prevs:
+                # two version of cave must be first to appear
+                continue
+
+            if '-two' in r and '-two' in twoUse[0]:
+                if twoUse[1] == smallCaveVisitLim:
+                    continue
+                # only one max limit small cave per route
+                if twoUse[0] != r:
+                    continue
+                else:
+                    twoUse[1] += 1
+            if '-two' in r:
+                twoUse[0] = r
+                twoUse[1] += 1
+                
+
+            # Either two use version or normal version is used
+            if '-two' not in r and sameCave(r, twoUse[0]):
+                continue
+
+            if sameCave(cur, r):
+                continue
+
+            # avoid going down a one way dead end..
+            if cur.islower() and r.islower() and not canEnd(r, []):
+                continue
+
+            # can't go back to a lowercase cave 2 times (small cave)
+            if r.islower() and r in prevs:
+                continue
+
+            traverseCave(r, prevs[:], route + '-' + r, twoUse[:])
+    else:
+        if cur == 'end':
+            cavePaths.append(route)
+        else:
+            # go back 1, retrace steps
+            traverseCave(prevs[-2], prevs[:], route + '-' + prevs[-2], twoUse[:])
+
+
+# find all paths/routes in cave object
+# start at cave start
+traverseCave('start', [], 'start', ['', 0])
+
+print(caveObj)
+print(sameCave('x','x-two'))
+# print solution
+print(cavePaths)
+print(len(cavePaths))
+</code></pre></div></div>,
     </body>
 </html>
