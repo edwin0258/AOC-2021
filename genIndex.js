@@ -31,7 +31,7 @@ let genDoc = []; // Generated html
 let files = fs.readdirSync('./');
 let days = files.filter(x => x.match(/^day..?$/g));
 // sort so days appear in correct order
-days.sort((a, b) => +a.substring(3,) > +b.substring(3,))
+days.sort((a, b) => +a.substring(3,) - +b.substring(3,))
 
 genDoc.push(`<div class='day-links'>`);
 days.forEach(day => {
